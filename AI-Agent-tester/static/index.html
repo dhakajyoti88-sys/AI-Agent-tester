@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Web Testing Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>AI Web Testing Tool</h1>
+
+    <textarea id="testcase"
+      placeholder="Check login page and verify username, password and login button">
+    </textarea>
+
+    <button onclick="runTest()">Run Test</button>
+
+    <div id="report"></div>
+</div>
+
+<script>
+function runTest() {
+    fetch("/run-test", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            test_case: document.getElementById("testcase").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let html = `
+        <h3>Final Test Report</h3>
+        <p><b>Status:</b> ${data.final_status}</p>
+        <p><b>Total Checks:</b> ${data.summary.total_checks}</p>
+        <p><b>Passed:</b> ${data.summary.passed}</p>
+
+        <table>
+            <tr><th>Element</th><th>Status</th><th>Details</th></tr>
+        `;
+
+        data.details.forEach(d => {
+            html += `<tr>
+                <td>${d.target}</td>
+                <td class="pass">${d.status}</td>
+                <td>${d.details}</td>
+            </tr>`;
+        });
+
+        html += "</table>";
+        document.getElementById("report").innerHTML = html;
+    });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+playwright
+langgraph
+flask
+langchain 
